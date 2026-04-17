@@ -1,4 +1,7 @@
-[English](./README.md) | [繁體中文](./README.zh-TW.md)
+<p dir="auto">
+  <a href="./README.md"><img src="https://img.shields.io/badge/docs-English-blue" alt="English" /></a>
+  <a href="./README.zh-TW.md"><img src="https://img.shields.io/badge/docs-%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87-yellow" alt="繁體中文" /></a>
+</p>
 
 # SDD Workflow
 
