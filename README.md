@@ -10,8 +10,9 @@ A skill-based workflow built around Specification-Driven Development (SDD). This
 This repo is useful if you want to:
 
 - turn natural-language requirements into executable development tasks
-- make AI-assisted implementation more traceable instead of jumping straight into coding
+- use a structured workflow to constrain AI implementation, keep the process controllable, and continuously align requirements with delivery
 - connect specs, implementation, review, testing, and delivery status in one workflow
+- practice document as code so that spec documents do not stay as passive documentation, but directly drive development
 
 ## What This Repo Provides
 
@@ -177,9 +178,9 @@ A typical path looks like this:
 
 ## Who This Is For
 
-- individual developers building repeatable AI-assisted development workflows
+- individual developers building stable AI-assisted development workflows
 - teams that want specs and implementation artifacts tied together
-- anyone trying to reduce the gap between requirement understanding and actual delivery
+- developers and non-technical stakeholders trying to reduce the gap between requirement understanding and direct implementation
 
 ## Scope Of This Repo
 
