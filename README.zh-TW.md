@@ -181,10 +181,6 @@ export-feature-file -> .feature
 - 想把規格文檔與實作產出綁在一起的團隊
 - 想降低「需求理解」與「直接開發」之間落差的開發者/非技術人員
 
-## 文件範圍
-
-本 repo 主要說明 `SDD Workflow` 的核心流程與直接相關的延伸技能，不包含通用輔助型技能，例如搜尋 skill、回退變更、刪除特殊檔案或匯出對話等工具型能力。
-
 ## 相關文件
 
 - 技能總覽文件：[docs/document.md](docs/document.md)

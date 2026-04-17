@@ -182,10 +182,6 @@ A typical path looks like this:
 - teams that want specs and implementation artifacts tied together
 - developers and non-technical stakeholders trying to reduce the gap between requirement understanding and direct implementation
 
-## Scope Of This Repo
-
-This repository focuses on the SDD core workflow and directly related extensions. It does not cover general-purpose helper skills such as skill discovery, rewind, special-file cleanup, or conversation export utilities.
-
 ## Related Files
 
 - Workflow overview: [docs/document.md](docs/document.md)
