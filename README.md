@@ -1,111 +1,182 @@
 # SDD Workflow
 
-`SDD Workflow` 是一套將需求整理、提案、實作、審查與完成狀態同步串接起來的技能流程，目的是讓規格文件可以穩定轉換為可執行任務、實作結果與後續驗證產出。
+以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。這個 repo 用來說明如何把需求文檔逐步轉成結構化流程、驗收條件、任務清單、實作、審查與完成狀態同步。
 
-本文件聚焦於兩個層次：
+它適合這幾種情境：
 
-- 核心流程：需求如何從規格文檔一路走到實作完成
-- 延伸流程：在核心流程之外，可選擇接入的 AC-first、Feature File 與 React 審查能力
+- 想把自然語言需求整理成可執行的開發任務
+- 想讓 AI 實作流程更可靠，穩定產出結果
+- 想把規格、實作、review、測試與完成狀態串成同一條工作流
 
-## 核心技能總覽
+## 這個 Repo 提供什麼
 
-整體流程以規格需求文檔為起點，先透過 `propose` 建立提案與任務，再交由 `apply` 實作，最後視需求補上測試並同步完成狀態。
+- 一條可重複使用的 SDD 核心流程
+- 一組對應流程節點的技能定義
+- 可選接入的 AC-first、Feature File 與 React 審查延伸能力
 
-## 核心流程階段對應表
-
-| 階段            | 技能             | 產出 / 任務                                                      | 觸發方式                                                  |
-| --------------- | ---------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
-| 1. 規劃提案     | `propose`        | 讀取規格文檔，識別功能清單，並為每個功能建立三份文檔             | `propose`、`幫我規劃這個功能`、提供規格文檔路徑           |
-| 1a. 結構化流程  | `clarify-flow`   | `01-flow.md`（由 `propose` 自動呼叫）                            | `propose` 內部呼叫；或 `clarify flow`、`把這段描述結構化` |
-| 1b. 驗收條件    | `export-gherkin` | `02-gherkin.md`（由 `propose` 自動呼叫）                         | `propose` 內部呼叫；或 `幫我轉成 Gherkin`                 |
-| 1c. 任務清單    | `propose` 本體   | `03-tasks.md`（由 `propose` 自行產出）                           | -                                                         |
-| 2. 實作任務     | `apply`          | 逐一實作 `03-tasks.md` 任務，更新 checkbox 狀態                  | `apply`、`開始實作`、指定 `propose` 資料夾路徑            |
-| 2a. Code Review | `code-reviewer`  | `apply` 全部完成後由 sub-agent 自動執行，更新 `[x]` -> `[x][cr]` | `apply` 完成後自動觸發                                    |
-| 3. 補上單元測試 | `bdd-unit-test`  | 產出對應語言的測試檔案（`[manual]` 任務，需新 session 手動觸發） | `幫這個檔案寫單測`、`write unit test`                     |
-| 4. 同步完成狀態 | `propose-sync`   | 掃描所有 `[x][cr]` 完成的功能，同步回規格文檔的 `## 已完成` 區塊 | `propose-sync`、`同步完成狀態`                            |
-
-## 核心技能相依關係
+## Workflow At A Glance
 
 ```text
-規格需求文檔
-    │
-    ▼
-propose ──► clarify-flow ──► 01-flow.md
-    │                            │
-    │      export-gherkin ◄──────┘
-    │           │
-    │           ▼
-    │       02-gherkin.md
-    │
-    └──► 03-tasks.md
-              │
-              ▼
-            apply
-              ├──► 逐任務實作
-              └──► code-reviewer (sub-agent, 自動)
-                        │
-                        ▼
-                   [x][cr] 完成
-                        │
-                 bdd-unit-test (manual)
-                        │
-                        ▼
-            propose-sync ──► 規格文檔 `## 已完成`
+需求規格
+  ↓
+propose
+  ├─ clarify-flow -> 01-flow.md
+  ├─ export-gherkin -> 02-gherkin.md
+  └─ 03-tasks.md
+  ↓
+apply
+  ├─ 實作任務
+  └─ code-reviewer
+  ↓
+bdd-unit-test (optional, manual)
+  ↓
+propose-sync
+  ↓
+回寫規格文檔的完成狀態
 ```
 
-## 核心流程補充說明
+## Quick Start
 
-- `propose` 不只建立三份文檔，也會回寫規格文檔中的 `> propose:` 標記，作為後續 `propose-sync` 判斷掃描根目錄的依據。
-- `propose` 可處理一般功能需求，也可處理 `bug fix list` 中標記為 `[propose]` 或需進一步分析的項目。
-- `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給使用者在新 session 手動觸發。
-- `code-reviewer` 是核心流程的一部分；若變更包含 React 前端檔案，審查時會額外套用 `react-design` 的原則。
+### 1. 準備規格文檔
+
+先準備一份需求文檔，例如：
+
+```md
+## 商品折扣功能
+
+使用者可在結帳頁輸入折扣碼，系統需驗證是否有效並更新訂單金額。
+未達門檻不可套用，已過期折扣碼需回傳錯誤。
+```
+
+### 2. 使用 `propose`
+
+讓 workflow 先把需求拆成可實作的中介文檔。
+
+```text
+propose docs/spec.md
+```
+
+預期產出：
+
+```text
+docs/propose/<feature-name>/
+  01-flow.md
+  02-gherkin.md
+  03-tasks.md
+```
+
+### 3. 使用 `apply`
+
+依照任務清單逐步實作。
+
+```text
+apply docs/propose/<feature-name>
+```
+
+### 4. 補測試或同步完成狀態
+
+- 實作後補單元測試：`bdd-unit-test`
+- 同步回原始規格文檔：`propose-sync`
+
+## Repository Structure
+
+```text
+skills/
+  propose/              核心提案入口
+  clarify-flow/         將需求整理成結構化流程
+  export-gherkin/       將流程轉成 Gherkin 驗收條件
+  apply/                依任務清單逐步實作
+  code-reviewer/        對照規格執行 code review
+  bdd-unit-test/        實作後補單元測試
+  propose-sync/         同步已完成功能回規格文檔
+
+  export-ac/            延伸：先產出 AC 文件
+  ac-to-test/           延伸：由 AC 產出紅燈測試骨架
+  export-feature-file/  延伸：輸出可執行 .feature
+  react-design/         延伸：React 設計與 review 原則
+
+docs/
+  document.md           技能總覽文件
+```
+
+## 核心流程
+
+核心流程以規格文檔為起點，先建立提案與任務，再進入實作與審查，最後同步完成狀態。
+
+| 階段            | 技能             | 產出 / 任務                |
+| --------------- | ---------------- | -------------------------- |
+| 1. 規劃提案     | `propose`        | 識別功能清單並建立三份文檔 |
+| 1a. 結構化流程  | `clarify-flow`   | `01-flow.md`               |
+| 1b. 驗收條件    | `export-gherkin` | `02-gherkin.md`            |
+| 1c. 任務清單    | `propose` 本體   | `03-tasks.md`              |
+| 2. 實作任務     | `apply`          | 依序完成 `03-tasks.md`     |
+| 2a. Code Review | `code-reviewer`  | 統一審查並更新 `[x][cr]`   |
+| 3. 補上單元測試 | `bdd-unit-test`  | 產出實作後測試             |
+| 4. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
+
+### 核心流程補充
+
+- `propose` 會回寫規格文檔中的 `> propose:` 標記，供後續 `propose-sync` 掃描使用。
+- `propose` 可處理一般功能需求，也可處理 `bug fix list` 中需進一步提案的項目。
+- `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
+- `code-reviewer` 屬於核心流程的一部分，不是額外附加步驟。
 
 ## 延伸技能
 
-以下技能不是核心主線的必經步驟，但可接入 workflow，補強需求驗收、測試先行與 BDD 執行能力。
+如果你只想理解主流程，可以先跳過這段。以下技能不是必經步驟，但能補強驗收與測試策略。
 
 | 技能                  | 角色                                          | 適用時機                                          |
 | --------------------- | --------------------------------------------- | ------------------------------------------------- |
 | `export-ac`           | 先從需求整理出 `AC.md` 驗收準則文件           | 需要先定義完成標準，再進入實作                    |
 | `ac-to-test`          | 將 `AC.md` 轉成紅燈測試骨架                   | 想採用 AC-first / test-first 流程時               |
 | `export-feature-file` | 將規格或 Gherkin 轉成可執行的 `.feature` 檔案 | 需要接入 Reqnroll、Cucumber、Behave 等 BDD 框架時 |
-| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | Code review 或前端設計討論包含 React 時           |
+| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論或 React code review 時               |
 
-## 延伸流程範例
+### 延伸流程範例
 
-### AC-first 路徑
-
-```text
-規格需求文檔
-    │
-    ▼
-export-ac ──► AC.md
-    │
-    ▼
-ac-to-test ──► 測試骨架（紅燈）
-    │
-    ▼
-propose / apply ──► 實作與驗證
-```
-
-### BDD 執行檔路徑
+#### AC-first 路徑
 
 ```text
-01-flow.md / 需求規格
-    │
-    ▼
-export-gherkin ──► 02-gherkin.md
-    │
-    └──► export-feature-file ──► .feature
+需求規格
+  ↓
+export-ac -> AC.md
+  ↓
+ac-to-test -> 測試骨架
+  ↓
+propose / apply -> 實作與驗證
 ```
 
-## 使用方式
+#### BDD 執行檔路徑
 
-1. 準備規格需求文檔。
-2. 執行 `propose` 產出 `01-flow.md`、`02-gherkin.md` 與 `03-tasks.md`。
-3. 執行 `apply` 逐步實作任務並完成 code review。
-4. 視需求使用 `bdd-unit-test` 補上實作後單元測試，或使用 `export-ac` + `ac-to-test` 走測試先行流程。
-5. 若需要接入 BDD 測試框架，可使用 `export-feature-file` 產出 `.feature`。
-6. 執行 `propose-sync` 將完成狀態同步回原始規格文檔。
+```text
+需求規格 / 01-flow.md
+  ↓
+export-gherkin -> 02-gherkin.md
+  ↓
+export-feature-file -> .feature
+```
 
-。
+## 最小使用示例
+
+一條典型路徑會像這樣：
+
+1. 你先有一份 `docs/spec.md`
+2. 執行 `propose docs/spec.md`
+3. 產出 `docs/propose/<feature>/01-flow.md`
+4. 產出 `docs/propose/<feature>/02-gherkin.md`
+5. 產出 `docs/propose/<feature>/03-tasks.md`
+6. 執行 `apply docs/propose/<feature>`
+7. 實作完成後由 `code-reviewer` 統一審查
+8. 視需要執行 `bdd-unit-test` 或 `propose-sync`
+
+## 適用對象
+
+- 想建立 AI 可重複執行開發流程的個人開發者
+- 想把規格文檔與實作產出綁在一起的團隊
+- 想降低「需求理解」與「直接開發」之間落差的開發者
+
+## 相關文件
+
+- 技能總覽文件：[docs/document.md](docs/document.md)
+- 技能定義目錄：[skills](skills)
+- 授權條款：[LICENSE](LICENSE)
