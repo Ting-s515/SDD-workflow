@@ -1,23 +1,25 @@
+[English](./README.md) | [繁體中文](./README.zh-TW.md)
+
 # SDD Workflow
 
-以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。這個 repo 用來說明如何把需求文檔逐步轉成結構化流程、驗收條件、任務清單、實作、審查與完成狀態同步。
+A skill-based workflow built around Specification-Driven Development (SDD). This repository explains how product requirements can be transformed into structured flows, acceptance criteria, task lists, implementation, review, and synced completion status.
 
-它適合這幾種情境：
+This repo is useful if you want to:
 
-- 想把自然語言需求整理成可執行的開發任務
-- 想讓 AI 實作流程更可靠，穩定產出結果
-- 想把規格、實作、review、測試與完成狀態串成同一條工作流
+- turn natural-language requirements into executable development tasks
+- make AI-assisted implementation more traceable instead of jumping straight into coding
+- connect specs, implementation, review, testing, and delivery status in one workflow
 
-## 這個 Repo 提供什麼
+## What This Repo Provides
 
-- 一條可重複使用的 SDD 核心流程
-- 一組對應流程節點的技能定義
-- 可選接入的 AC-first、Feature File 與 React 審查延伸能力
+- a reusable SDD core workflow
+- a set of skills mapped to each stage of the workflow
+- optional extensions for AC-first, Feature File generation, and React review guidance
 
 ## Workflow At A Glance
 
 ```text
-需求規格
+Requirements spec
   ↓
 propose
   ├─ clarify-flow -> 01-flow.md
@@ -25,38 +27,39 @@ propose
   └─ 03-tasks.md
   ↓
 apply
-  ├─ 實作任務
+  ├─ implement tasks
   └─ code-reviewer
   ↓
 bdd-unit-test (optional, manual)
   ↓
 propose-sync
   ↓
-回寫規格文檔的完成狀態
+sync completion status back to the spec
 ```
 
 ## Quick Start
 
-### 1. 準備規格文檔
+### 1. Prepare a spec document
 
-先準備一份需求文檔，例如：
+Start with a requirement document such as:
 
 ```md
-## 商品折扣功能
+## Discount Code Feature
 
-使用者可在結帳頁輸入折扣碼，系統需驗證是否有效並更新訂單金額。
-未達門檻不可套用，已過期折扣碼需回傳錯誤。
+Users can enter a discount code on the checkout page.
+The system must validate the code and update the order total.
+Codes below the threshold must be rejected, and expired codes must return an error.
 ```
 
-### 2. 使用 `propose`
+### 2. Run `propose`
 
-讓 workflow 先把需求拆成可實作的中介文檔。
+Use the workflow to break the requirement into implementation-ready intermediate documents.
 
 ```text
 propose docs/spec.md
 ```
 
-預期產出：
+Expected output:
 
 ```text
 docs/propose/<feature-name>/
@@ -65,118 +68,122 @@ docs/propose/<feature-name>/
   03-tasks.md
 ```
 
-### 3. 使用 `apply`
+### 3. Run `apply`
 
-依照任務清單逐步實作。
+Implement the generated task list step by step.
 
 ```text
 apply docs/propose/<feature-name>
 ```
 
-### 4. 補測試或同步完成狀態
+### 4. Add tests or sync completion status
 
-- 實作後補單元測試：`bdd-unit-test`
-- 同步回原始規格文檔：`propose-sync`
+- add post-implementation unit tests with `bdd-unit-test`
+- sync finished work back to the source spec with `propose-sync`
 
 ## Repository Structure
 
 ```text
 skills/
-  propose/              核心提案入口
-  clarify-flow/         將需求整理成結構化流程
-  export-gherkin/       將流程轉成 Gherkin 驗收條件
-  apply/                依任務清單逐步實作
-  code-reviewer/        對照規格執行 code review
-  bdd-unit-test/        實作後補單元測試
-  propose-sync/         同步已完成功能回規格文檔
+  propose/              entry point for proposal generation
+  clarify-flow/         convert requirements into structured flow documents
+  export-gherkin/       convert flows into Gherkin acceptance criteria
+  apply/                implement generated task lists step by step
+  code-reviewer/        run spec-aligned code review
+  bdd-unit-test/        add post-implementation unit tests
+  propose-sync/         sync completed features back to the spec
 
-  export-ac/            延伸：先產出 AC 文件
-  ac-to-test/           延伸：由 AC 產出紅燈測試骨架
-  export-feature-file/  延伸：輸出可執行 .feature
-  react-design/         延伸：React 設計與 review 原則
+  export-ac/            extension: generate AC documents first
+  ac-to-test/           extension: generate red tests from AC
+  export-feature-file/  extension: output executable .feature files
+  react-design/         extension: React design and review principles
 
 docs/
-  document.md           技能總覽文件
+  document.md           workflow overview document
 ```
 
-## 核心流程
+## Core Workflow
 
-核心流程以規格文檔為起點，先建立提案與任務，再進入實作與審查，最後同步完成狀態。
+The core workflow starts from a spec document, generates proposal artifacts, moves into implementation and review, and finally syncs completion status back to the source document.
 
-| 階段            | 技能             | 產出 / 任務                |
-| --------------- | ---------------- | -------------------------- |
-| 1. 規劃提案     | `propose`        | 識別功能清單並建立三份文檔 |
-| 1a. 結構化流程  | `clarify-flow`   | `01-flow.md`               |
-| 1b. 驗收條件    | `export-gherkin` | `02-gherkin.md`            |
-| 1c. 任務清單    | `propose` 本體   | `03-tasks.md`              |
-| 2. 實作任務     | `apply`          | 依序完成 `03-tasks.md`     |
-| 2a. Code Review | `code-reviewer`  | 統一審查並更新 `[x][cr]`   |
-| 3. 補上單元測試 | `bdd-unit-test`  | 產出實作後測試             |
-| 4. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
+| Stage                   | Skill            | Output / Task                                   |
+| ----------------------- | ---------------- | ----------------------------------------------- |
+| 1. Proposal planning    | `propose`        | identify features and generate three documents  |
+| 1a. Structured flow     | `clarify-flow`   | `01-flow.md`                                    |
+| 1b. Acceptance criteria | `export-gherkin` | `02-gherkin.md`                                 |
+| 1c. Task list           | `propose` itself | `03-tasks.md`                                   |
+| 2. Implementation       | `apply`          | complete `03-tasks.md` step by step             |
+| 2a. Code review         | `code-reviewer`  | review implementation and update `[x][cr]`      |
+| 3. Unit tests           | `bdd-unit-test`  | generate post-implementation tests              |
+| 4. Completion sync      | `propose-sync`   | write back to the spec's `## Completed` section |
 
-### 核心流程補充
+### Notes On The Core Flow
 
-- `propose` 會回寫規格文檔中的 `> propose:` 標記，供後續 `propose-sync` 掃描使用。
-- `propose` 可處理一般功能需求，也可處理 `bug fix list` 中需進一步提案的項目。
-- `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
-- `code-reviewer` 屬於核心流程的一部分，不是額外附加步驟。
+- `propose` writes `> propose:` markers back into the spec so that `propose-sync` can locate related feature folders later.
+- `propose` can handle both normal feature requests and items in a `bug fix list` that require proposal-level treatment.
+- `apply` only executes normal tasks automatically; tasks marked as `[manual]` are left for a new session.
+- `code-reviewer` is part of the core workflow, not an extra optional step.
 
-## 延伸技能
+## Extension Skills
 
-如果你只想理解主流程，可以先跳過這段。以下技能不是必經步驟，但能補強驗收與測試策略。
+If you only want to understand the main flow, you can skip this section first. These skills are not mandatory, but they extend the workflow with stronger acceptance and testing strategies.
 
-| 技能                  | 角色                                          | 適用時機                                          |
-| --------------------- | --------------------------------------------- | ------------------------------------------------- |
-| `export-ac`           | 先從需求整理出 `AC.md` 驗收準則文件           | 需要先定義完成標準，再進入實作                    |
-| `ac-to-test`          | 將 `AC.md` 轉成紅燈測試骨架                   | 想採用 AC-first / test-first 流程時               |
-| `export-feature-file` | 將規格或 Gherkin 轉成可執行的 `.feature` 檔案 | 需要接入 Reqnroll、Cucumber、Behave 等 BDD 框架時 |
-| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論或 React code review 時               |
+| Skill                 | Role                                                   | When To Use It                                                              |
+| --------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `export-ac`           | generate an `AC.md` acceptance-criteria document first | when you want to define completion criteria before implementation           |
+| `ac-to-test`          | turn `AC.md` into red test skeletons                   | when you want an AC-first or test-first workflow                            |
+| `export-feature-file` | turn specs or Gherkin into executable `.feature` files | when integrating with Reqnroll, Cucumber, Behave, or similar BDD frameworks |
+| `react-design`        | provide React architecture and best-practice guidance  | during frontend design discussions or React code review                     |
 
-### 延伸流程範例
+### Extension Flow Examples
 
-#### AC-first 路徑
+#### AC-first path
 
 ```text
-需求規格
+Requirements spec
   ↓
 export-ac -> AC.md
   ↓
-ac-to-test -> 測試骨架
+ac-to-test -> test skeletons
   ↓
-propose / apply -> 實作與驗證
+propose / apply -> implementation and validation
 ```
 
-#### BDD 執行檔路徑
+#### Executable BDD path
 
 ```text
-需求規格 / 01-flow.md
+Requirements spec / 01-flow.md
   ↓
 export-gherkin -> 02-gherkin.md
   ↓
 export-feature-file -> .feature
 ```
 
-## 最小使用示例
+## Minimal Example
 
-一條典型路徑會像這樣：
+A typical path looks like this:
 
-1. 你先有一份 `docs/spec.md`
-2. 執行 `propose docs/spec.md`
-3. 產出 `docs/propose/<feature>/01-flow.md`
-4. 產出 `docs/propose/<feature>/02-gherkin.md`
-5. 產出 `docs/propose/<feature>/03-tasks.md`
-6. 執行 `apply docs/propose/<feature>`
-7. 實作完成後由 `code-reviewer` 統一審查
-8. 視需要執行 `bdd-unit-test` 或 `propose-sync`
+1. Prepare `docs/spec.md`
+2. Run `propose docs/spec.md`
+3. Generate `docs/propose/<feature>/01-flow.md`
+4. Generate `docs/propose/<feature>/02-gherkin.md`
+5. Generate `docs/propose/<feature>/03-tasks.md`
+6. Run `apply docs/propose/<feature>`
+7. Let `code-reviewer` review the completed implementation
+8. Run `bdd-unit-test` or `propose-sync` if needed
 
-## 適用對象
+## Who This Is For
 
-- 想建立 AI 可重複執行開發流程的個人開發者
-- 想把規格文檔與實作產出綁在一起的團隊
-- 想降低「需求理解」與「直接開發」之間落差的開發者
+- individual developers building repeatable AI-assisted development workflows
+- teams that want specs and implementation artifacts tied together
+- anyone trying to reduce the gap between requirement understanding and actual delivery
 
-## 相關文件
+## Scope Of This Repo
 
-- 技能總覽文件：[docs/document.md](docs/document.md)
-- 技能定義目錄：[skills](skills)
-- 授權條款：[LICENSE](LICENSE)
+This repository focuses on the SDD core workflow and directly related extensions. It does not cover general-purpose helper skills such as skill discovery, rewind, special-file cleanup, or conversation export utilities.
+
+## Related Files
+
+- Workflow overview: [docs/document.md](docs/document.md)
+- Skill definitions: [skills](skills)
+- License: [LICENSE](LICENSE)
