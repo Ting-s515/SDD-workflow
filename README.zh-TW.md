@@ -129,7 +129,7 @@ docs/
 - `propose` 可處理一般功能需求，也可處理 `## bug fix list` 中的 `[quick-fix]`、`[propose]` 與未標記項目。
 - `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
 - `apply` 使用 `[BDD]` 表示測試已撰寫，使用 `[x][BDD]` 表示測試、實作與驗證完成。
-- `propose-sync` 以 `[x][BDD]`、`[x][widget-test]` 或 `[x]` 判斷非 `[manual]` 任務完成，不再依賴 `[x][cr]`。
+- `propose-sync` 以 `[x][BDD]`、`[x][widget-test]` 或 `[x]` 判斷非 `[manual]` 任務完成。
 - 沒有被 `propose`、`apply` 或 `propose-sync` 直接呼叫的技能，一律視為延伸輔助技能。
 
 ## 延伸輔助技能

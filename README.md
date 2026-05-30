@@ -130,7 +130,7 @@ Only skills directly used by `propose`, `apply`, or `propose-sync` are listed in
 - `propose` can handle normal feature requests and `## bug fix list` items marked as `[quick-fix]`, `[propose]`, or left unmarked for automatic routing.
 - `apply` only executes normal tasks automatically; tasks marked as `[manual]` are left for a new session.
 - `apply` uses `[BDD]` for tasks with tests written and `[x][BDD]` for tasks whose tests, implementation, and validation are complete.
-- `propose-sync` treats non-`[manual]` tasks as complete when they are marked `[x][BDD]`, `[x][widget-test]`, or `[x]`; it no longer depends on `[x][cr]`.
+- `propose-sync` treats non-`[manual]` tasks as complete when they are marked `[x][BDD]`, `[x][widget-test]`, or `[x]`.
 - Any skill not directly called by `propose`, `apply`, or `propose-sync` is treated as an extension helper skill.
 
 ## Extension Helper Skills
