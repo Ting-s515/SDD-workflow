@@ -121,7 +121,7 @@ The core workflow starts from a spec document, generates proposal artifacts, mov
 | 2. TDD implementation   | `apply`          | write tests first, then complete `03-tasks.md`  |
 | 2a. Test generation     | `bdd-unit-test`  | called by `apply`, or used manually for files   |
 | 2b. Code review         | `code-reviewer`  | review git diff against specs and save reports  |
-| 4. Completion sync      | `propose-sync`   | write back to the spec's `## 已完成` section    |
+| 3. Completion sync      | `propose-sync`   | write back to the spec's `## 已完成` section    |
 
 ### Notes On The Core Flow
 

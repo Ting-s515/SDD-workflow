@@ -120,7 +120,7 @@ docs/
 | 2. TDD 實作     | `apply`          | 先補測試，再依序完成 `03-tasks.md` |
 | 2a. 測試生成    | `bdd-unit-test`  | `apply` 內部呼叫，或手動替指定檔案補測試 |
 | 2b. Code Review | `code-reviewer`  | 對照規格與 git diff 審查，輸出 review report |
-| 4. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
+| 3. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
 
 ### 核心流程補充
 

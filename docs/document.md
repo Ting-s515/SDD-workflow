@@ -38,7 +38,7 @@ propose-sync
 | 1c. 任務清單 | `propose` 本體 | `03-tasks.md`，拆分可實作任務並加入 `[manual]` 測試任務 | `propose` 流程內產出 |
 | 2. TDD 實作 | `apply` | 先補 BDD 測試，再逐項實作與驗證，更新任務 checkbox | `apply`、`開始實作`、指定 `docs/propose/<feature>/` |
 | 2a. 測試生成 | `bdd-unit-test` | 依檔案或任務產出 BDD 單元測試，涵蓋 Happy / Edge / Error / State Changes | `apply` 內部呼叫；或 `幫這個檔案寫單測` |
-| 2b. Code Review | `code-reviewer` | 對照規格與 git diff 審查，必要時輸出 `docs/code-review-report/` 報告 | `幫我 review`、`對照文件幫我 review`、sub-agent review prompt |
+| 2b. Code Review | `code-reviewer` | 對照規格與 git diff 審查，並固定輸出 `docs/code-review-report/` 報告 | `幫我 review`、`對照文件幫我 review`、sub-agent review prompt |
 | 3. 同步完成狀態 | `propose-sync` | 掃描 `03-tasks.md` 完成狀態，更新來源規格的 `## 已完成` 區塊 | `propose-sync`、`同步完成狀態` |
 
 ## 任務狀態標記
