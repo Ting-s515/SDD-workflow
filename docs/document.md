@@ -21,8 +21,6 @@ apply
     ├─ 逐項實作並跑測試
     └─ 測試通過後標記為 [x][BDD]
             │
-            ├─ code-reviewer（需要 review 時執行）
-            │
             ▼
 propose-sync
     └─ 將完成項目回寫到規格文檔的 ## 已完成 區塊
@@ -38,7 +36,6 @@ propose-sync
 | 1c. 任務清單 | `propose` 本體 | `03-tasks.md`，拆分可實作任務並加入 `[manual]` 測試任務 | `propose` 流程內產出 |
 | 2. TDD 實作 | `apply` | 先補 BDD 測試，再逐項實作與驗證，更新任務 checkbox | `apply`、`開始實作`、指定 `docs/propose/<feature>/` |
 | 2a. 測試生成 | `bdd-unit-test` | 依檔案或任務產出 BDD 單元測試，涵蓋 Happy / Edge / Error / State Changes | `apply` 內部呼叫；或 `幫這個檔案寫單測` |
-| 2b. Code Review | `code-reviewer` | 對照規格與 git diff 審查，並固定輸出 `docs/code-review-report/` 報告 | `幫我 review`、`對照文件幫我 review`、sub-agent review prompt |
 | 3. 同步完成狀態 | `propose-sync` | 掃描 `03-tasks.md` 完成狀態，更新來源規格的 `## 已完成` 區塊 | `propose-sync`、`同步完成狀態` |
 
 ## 任務狀態標記
@@ -91,13 +88,6 @@ propose-sync
 - 測試範圍聚焦純邏輯、服務層、工具函式、資料處理與狀態管理邏輯，不處理 UI 渲染、視覺回歸、E2E 或整合測試。
 - 場景需涵蓋 Happy Path、Edge Cases、Error Cases 與 State Changes。
 
-### `code-reviewer`
-
-- 用於對照規格文檔與 git diff 審查程式碼，不是 `apply` 技能內建的自動任務標記流程。
-- 若 diff 包含 React 前端檔案，先載入 `react-design` 原則審查，再做規格符合度與通用程式碼審查。
-- 完成 review 後，需將與對話輸出一致的摘要存到 `docs/code-review-report/code-review-YYYY-MM-DD-<feature-slug>.md`。
-- 同一天同一規格重複審查時覆蓋舊檔，但輪數依既有檔案標題遞增。
-
 ### `propose-sync`
 
 - 依來源規格中的 `> propose:` 標記推斷掃描根目錄。
@@ -112,7 +102,16 @@ propose-sync
 | `export-ac` | 實作前先整理 Acceptance Criteria，明確 In / Out Scope 與測試策略 | `AC-<input-name>.md` |
 | `ac-to-test` | 將 `AC.md` 每條 Given / When / Then 轉成紅燈測試骨架 | 對應語言的測試檔 |
 | `export-feature-file` | 將規格或 Gherkin 轉成可被 BDD 框架執行的 `.feature` | `.feature` 與 Step Definitions 提示 |
+| `code-reviewer` | 對照規格文檔與 git diff 審查程式碼，固定輸出 review report | 獨立 review 階段，不是 `propose -> apply -> propose-sync` 的依賴 |
 | `react-design` | 提供 React 組件、hooks、services、context 與註解規範 | React 設計與 review 判斷基準 |
+
+### `code-reviewer`
+
+- 獨立於新版核心流程；`propose`、`apply`、`propose-sync` 不依賴它。
+- 用於對照規格文檔與 git diff 審查程式碼，不是 `apply` 技能內建的自動任務標記流程。
+- 若 diff 包含 React 前端檔案，先載入 `react-design` 原則審查，再做規格符合度與通用程式碼審查。
+- 完成 review 後，需將與對話輸出一致的摘要存到 `docs/code-review-report/code-review-YYYY-MM-DD-<feature-slug>.md`。
+- 同一天同一規格重複審查時覆蓋舊檔，但輪數依既有檔案標題遞增。
 
 ## 延伸流程範例
 

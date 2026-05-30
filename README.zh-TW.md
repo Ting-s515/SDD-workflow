@@ -5,13 +5,13 @@
 
 # SDD Workflow
 
-這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 用來說明如何將需求文檔逐步轉成結構化流程、驗收條件、任務清單、TDD 實作、審查與完成狀態同步。
+這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 用來說明如何將需求文檔逐步轉成結構化流程、驗收條件、任務清單、TDD 實作與完成狀態同步。
 
 它適合這幾種情境：
 
 - 想把自然語言需求整理成可執行的開發任務
 - 想用結構化 workflow 約束 AI 實作，讓流程更可控，並持續對齊需求
-- 想把規格、實作、review、測試與完成狀態串成同一條工作流
+- 想把規格、實作、測試與完成狀態串成同一條工作流
 - document as code 的實踐者，想讓規格文檔不只是說明，而是直接驅動開發
 
 ## 這個 Repo 提供什麼
@@ -34,8 +34,6 @@ apply
   ├─ bdd-unit-test -> [BDD]
   ├─ 實作與測試驗證
   └─ [x][BDD]
-  ↓
-code-reviewer (需要 review 時執行)
   ↓
 propose-sync
   ↓
@@ -80,11 +78,11 @@ docs/propose/<feature-name>/
 apply docs/propose/<feature-name>
 ```
 
-### 4. Review 或同步完成狀態
+### 4. 同步完成狀態
 
-- 需要對照規格與 diff 審查時：`code-reviewer`
-- 需要針對指定檔案額外補單元測試時：`bdd-unit-test`
-- 同步回原始規格文檔：`propose-sync`
+使用 `propose-sync` 同步回原始規格文檔。
+
+`code-reviewer` 是獨立審查技能；目前新版 `propose -> apply -> propose-sync` 主流程不依賴它。
 
 ## Repository Structure
 
@@ -109,7 +107,7 @@ docs/
 
 ## 核心流程
 
-核心流程以規格文檔為起點，先建立提案與任務，再進入 TDD 實作與驗證，必要時做 code review，最後同步完成狀態。
+核心流程以規格文檔為起點，先建立提案與任務，再進入 TDD 實作與驗證，最後同步完成狀態。
 
 | 階段            | 技能             | 產出 / 任務                |
 | --------------- | ---------------- | -------------------------- |
@@ -119,7 +117,6 @@ docs/
 | 1c. 任務清單    | `propose` 本體   | `03-tasks.md`              |
 | 2. TDD 實作     | `apply`          | 先補測試，再依序完成 `03-tasks.md` |
 | 2a. 測試生成    | `bdd-unit-test`  | `apply` 內部呼叫，或手動替指定檔案補測試 |
-| 2b. Code Review | `code-reviewer`  | 對照規格與 git diff 審查，輸出 review report |
 | 3. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
 
 ### 核心流程補充
@@ -129,7 +126,7 @@ docs/
 - `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
 - `apply` 使用 `[BDD]` 表示測試已撰寫，使用 `[x][BDD]` 表示測試、實作與驗證完成。
 - `propose-sync` 以 `[x][BDD]`、`[x][widget-test]` 或 `[x]` 判斷非 `[manual]` 任務完成，不再依賴 `[x][cr]`。
-- `code-reviewer` 是 review 階段的技能，可依規格與 diff 審查並產生 `docs/code-review-report/` 報告；它不負責更新任務 checkbox。
+- `code-reviewer` 獨立於核心流程，可依規格與 diff 審查並產生 `docs/code-review-report/` 報告；它不負責更新任務 checkbox，也不是 `propose-sync` 前置條件。
 
 ## 延伸技能
 
@@ -140,6 +137,7 @@ docs/
 | `export-ac`           | 先從需求整理出 `AC.md` 驗收準則文件           | 需要先定義完成標準，再進入實作                    |
 | `ac-to-test`          | 將 `AC.md` 轉成紅燈測試骨架                   | 想採用 AC-first / test-first 流程時               |
 | `export-feature-file` | 將規格或 Gherkin 轉成可執行的 `.feature` 檔案 | 需要接入 Reqnroll、Cucumber、Behave 等 BDD 框架時 |
+| `code-reviewer`       | 對照規格與 git diff 執行審查並存 report       | 需要獨立 review 階段時                            |
 | `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論、React 實作或 React code review 時   |
 
 ### 延伸流程範例
@@ -177,7 +175,9 @@ export-feature-file -> .feature
 5. 產出 `docs/propose/<feature>/03-tasks.md`
 6. 執行 `apply docs/propose/<feature>`
 7. `apply` 先補測試標記 `[BDD]`，再實作並更新為 `[x][BDD]`
-8. 視需要執行 `code-reviewer`、手動 `bdd-unit-test` 或 `propose-sync`
+8. 執行 `propose-sync` 回寫來源規格文檔
+
+若需要額外審查，再獨立執行 `code-reviewer`。
 
 ## 適用對象
 
