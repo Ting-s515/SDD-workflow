@@ -2,7 +2,7 @@
 name: export-feature-file
 description: >
   當使用者提供 Gherkin 文檔、業務邏輯說明或需求規格，並要求產出可被測試框架執行的 Feature File 時，必須載入此技能。
-  支援 .NET (Reqnroll)、Java (Cucumber-JVM)、JavaScript/TypeScript (Cucumber.js)、Python (Behave) 等框架，
+  支援 .NET (Reqnroll)、Java (Cucumber-JVM)、JavaScript/TypeScript (Cucumber.js)、Python (Behave)、Flutter/Dart (flutter_gherkin) 等框架；清單外的框架以 LLM 通用知識產出 Step Definitions，
   產出符合框架規範的 .feature 檔案，包含 Scenario、Scenario Outline、Examples 等結構。
   觸發情境包含但不限於：「幫我產出 feature file」、「把這個轉成 .feature」、「export feature file」、
   「根據業務邏輯寫 feature」、「建立測試案例檔」。
@@ -17,14 +17,26 @@ description: >
 
 ## 支援的測試框架
 
-| 語言/平台 | 測試框架 | Cucumber Expression `{}` |
-|-----------|----------|:---:|
-| .NET | Reqnroll | ✅ 原生支援 |
-| Java | Cucumber-JVM | ✅ 原生支援 |
-| JavaScript/TypeScript | Cucumber.js | ✅ 原生支援 |
-| Python | Behave | ❌ 使用框架原生語法 |
-| Ruby | Cucumber | ✅ 原生支援 |
-| Go | Godog | ✅ 原生支援 |
+### 已知框架（有 reference 範例）
+
+| 語言/平台 | 測試框架 | Cucumber Expression `{}` | 載入 Reference |
+|-----------|----------|:---:|----------------|
+| .NET | Reqnroll | ✅ 原生支援 | `references/dotnet-reqnroll-steps.cs` |
+| Java | Cucumber-JVM | ✅ 原生支援 | `references/java-cucumber-steps.java` |
+| JavaScript/TypeScript | Cucumber.js | ✅ 原生支援 | `references/typescript-cucumber-steps.ts` |
+| Python | Behave | ❌ 使用框架原生語法 | `references/python-behave-steps.py` |
+| Flutter/Dart | flutter_gherkin | ✅ 原生支援 | `references/dart-flutter-gherkin-steps.dart` |
+
+**執行說明：**
+- 判別框架後，**只讀取對應的 reference 檔**作為 Step Definitions 風格依據
+- Ruby (Cucumber)、Go (Godog) 已在 Cucumber Expression 表格列出，但無 reference，走 fallback
+
+### 未知框架（fallback）
+
+框架不在上表時，直接以 LLM 通用知識處理：
+- `.feature` 檔案格式完全相同（Gherkin 格式與框架無關）
+- Step Definitions 依該框架的主流慣例產出
+- 不需告知使用者
 
 ## 格式定義
 
@@ -188,80 +200,21 @@ Step Definitions **必須**透過 Scope 機制明確綁定至對應的 Feature�
 | Java (Cucumber-JVM) | 不支援 Scope，透過 Glue 路徑區隔 | `@CucumberOptions(glue = "steps.login")` |
 | JavaScript/TypeScript | 不支援 Scope，透過模組目錄區隔 | `features/login/step_definitions/` |
 | Python (Behave) | 不支援 Scope，透過 steps 目錄區隔 | `features/steps/login_steps.py` |
+| Flutter/Dart (flutter_gherkin) | 不支援 Scope，在 runner config 集中註冊步驟 | `FlutterTestConfiguration(stepDefinitions: [...])` |
 
 > Scope 的 Feature 名稱需與 `.feature` 檔案中的 `Feature:` 標題**完全一致**。
 
-### .NET (Reqnroll)
+### Step Definitions 範例
 
-```csharp
-// Why: [Scope] 將 Step Definitions 綁定至指定 Feature，避免跨 Feature 的步驟定義衝突
-// Syntax: Feature 名稱需與 .feature 檔案中的 Feature 標題完全一致
-[Scope(Feature = "用戶登入")]
-[Binding]
-public class LoginSteps
-{
-    [Given("用戶已註冊帳號 {string}")]
-    public void Given用戶已註冊帳號(string email) { /* 準備測試資料 */ }
+判別框架後，讀取對應的 reference 檔案作為撰寫 Step Definitions 的風格依據：
 
-    [When("用戶輸入正確的帳號密碼")]
-    public void When用戶輸入正確的帳號密碼() { /* 執行登入 */ }
+- **.NET (Reqnroll)**：`references/dotnet-reqnroll-steps.cs`
+- **Java (Cucumber-JVM)**：`references/java-cucumber-steps.java`
+- **JavaScript/TypeScript (Cucumber.js)**：`references/typescript-cucumber-steps.ts`
+- **Python (Behave)**：`references/python-behave-steps.py`
+- **Flutter/Dart (flutter_gherkin)**：`references/dart-flutter-gherkin-steps.dart`
 
-    [Then("待發送清單應包含 {int} 筆資料")]
-    public void Then待發送清單應包含N筆資料(int expectedCount) { /* 驗證筆數 */ }
-
-    [Then("系統導向至首頁")]
-    public void Then系統導向至首頁() { /* 驗證導向 */ }
-}
-```
-
-### Java (Cucumber-JVM)
-
-```java
-public class LoginSteps {
-    @Given("用戶已註冊帳號 {string}")
-    public void 用戶已註冊帳號(String email) { /* 準備測試資料 */ }
-
-    @When("用戶輸入正確的帳號密碼")
-    public void 用戶輸入正確的帳號密碼() { /* 執行登入 */ }
-
-    @Then("待發送清單應包含 {int} 筆資料")
-    public void 待發送清單應包含N筆資料(int expectedCount) { /* 驗證筆數 */ }
-
-    @Then("系統導向至首頁")
-    public void 系統導向至首頁() { /* 驗證導向 */ }
-}
-```
-
-### JavaScript/TypeScript (Cucumber.js)
-
-```typescript
-import { Given, When, Then } from '@cucumber/cucumber';
-
-Given('用戶已註冊帳號 {string}', function (email: string) { /* 準備測試資料 */ });
-When('用戶輸入正確的帳號密碼', function () { /* 執行登入 */ });
-Then('待發送清單應包含 {int} 筆資料', function (expectedCount: number) { /* 驗證筆數 */ });
-Then('系統導向至首頁', function () { /* 驗證導向 */ });
-```
-
-### Python (Behave) — 使用框架原生語法
-
-```python
-from behave import given, when, then
-
-# Why: Behave 不原生支援 Cucumber Expression，使用框架自有的參數語法
-# Syntax: 字串參數用 "{param}" 雙引號包覆，整數參數用 {param:d} 加型別後綴
-@given('用戶已註冊帳號 "{email}"')
-def step_impl(context, email): pass  # 準備測試資料
-
-@when('用戶輸入正確的帳號密碼')
-def step_impl(context): pass  # 執行登入
-
-@then('待發送清單應包含 {expected_count:d} 筆資料')
-def step_impl(context, expected_count): pass  # 驗證筆數
-
-@then('系統導向至首頁')
-def step_impl(context): pass  # 驗證導向
-```
+**注意**：產出 Step Definitions 前必須先讀取對應語言的 reference 檔案，確保遵循一致的風格與 Scope 綁定規範。
 
 ## 檔案命名規範
 
