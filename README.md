@@ -5,7 +5,7 @@
 
 # SDD Workflow
 
-A skill-based workflow built around Specification-Driven Development (SDD). This repository explains how product requirements can be transformed into structured flows, acceptance criteria, task lists, implementation, review, and synced completion status.
+A skill-based workflow built around Specification-Driven Development (SDD). This repository explains how product requirements can be transformed into structured flows, acceptance criteria, task lists, TDD implementation, review, and synced completion status.
 
 This repo is useful if you want to:
 
@@ -18,7 +18,7 @@ This repo is useful if you want to:
 
 - a reusable SDD core workflow
 - a set of skills mapped to each stage of the workflow
-- optional extensions for AC-first, Feature File generation, and React review guidance
+- optional extensions for AC-first, executable Feature File generation, React design, and code review guidance
 
 ## Workflow At A Glance
 
@@ -31,10 +31,11 @@ propose
   └─ 03-tasks.md
   ↓
 apply
-  ├─ implement tasks
-  └─ code-reviewer
+  ├─ bdd-unit-test -> [BDD]
+  ├─ implementation and test validation
+  └─ [x][BDD]
   ↓
-bdd-unit-test (optional, manual)
+code-reviewer (when review is needed)
   ↓
 propose-sync
   ↓
@@ -74,15 +75,16 @@ docs/propose/<feature-name>/
 
 ### 3. Run `apply`
 
-Implement the generated task list step by step.
+Run the generated task list through the TDD flow. `apply` first writes BDD tests for all normal tasks and marks them as `[BDD]`, then implements each task, runs the relevant tests, and marks passing tasks as `[x][BDD]`.
 
 ```text
 apply docs/propose/<feature-name>
 ```
 
-### 4. Add tests or sync completion status
+### 4. Review or sync completion status
 
-- add post-implementation unit tests with `bdd-unit-test`
+- review the diff against the spec with `code-reviewer`
+- add extra file-level unit tests with `bdd-unit-test`
 - sync finished work back to the source spec with `propose-sync`
 
 ## Repository Structure
@@ -92,9 +94,9 @@ skills/
   propose/              entry point for proposal generation
   clarify-flow/         convert requirements into structured flow documents
   export-gherkin/       convert flows into Gherkin acceptance criteria
-  apply/                implement generated task lists step by step
-  code-reviewer/        run spec-aligned code review
-  bdd-unit-test/        add post-implementation unit tests
+  apply/                run TDD tests and implementation from task lists
+  bdd-unit-test/        generate BDD unit tests
+  code-reviewer/        review git diff against specs
   propose-sync/         sync completed features back to the spec
 
   export-ac/            extension: generate AC documents first
@@ -108,7 +110,7 @@ docs/
 
 ## Core Workflow
 
-The core workflow starts from a spec document, generates proposal artifacts, moves into implementation and review, and finally syncs completion status back to the source document.
+The core workflow starts from a spec document, generates proposal artifacts, moves into TDD implementation and validation, runs review when needed, and finally syncs completion status back to the source document.
 
 | Stage                   | Skill            | Output / Task                                   |
 | ----------------------- | ---------------- | ----------------------------------------------- |
@@ -116,17 +118,19 @@ The core workflow starts from a spec document, generates proposal artifacts, mov
 | 1a. Structured flow     | `clarify-flow`   | `01-flow.md`                                    |
 | 1b. Acceptance criteria | `export-gherkin` | `02-gherkin.md`                                 |
 | 1c. Task list           | `propose` itself | `03-tasks.md`                                   |
-| 2. Implementation       | `apply`          | complete `03-tasks.md` step by step             |
-| 2a. Code review         | `code-reviewer`  | review implementation and update `[x][cr]`      |
-| 3. Unit tests           | `bdd-unit-test`  | generate post-implementation tests              |
-| 4. Completion sync      | `propose-sync`   | write back to the spec's `## Completed` section |
+| 2. TDD implementation   | `apply`          | write tests first, then complete `03-tasks.md`  |
+| 2a. Test generation     | `bdd-unit-test`  | called by `apply`, or used manually for files   |
+| 2b. Code review         | `code-reviewer`  | review git diff against specs and save reports  |
+| 4. Completion sync      | `propose-sync`   | write back to the spec's `## 已完成` section    |
 
 ### Notes On The Core Flow
 
 - `propose` writes `> propose:` markers back into the spec so that `propose-sync` can locate related feature folders later.
-- `propose` can handle both normal feature requests and items in a `bug fix list` that require proposal-level treatment.
+- `propose` can handle normal feature requests and `## bug fix list` items marked as `[quick-fix]`, `[propose]`, or left unmarked for automatic routing.
 - `apply` only executes normal tasks automatically; tasks marked as `[manual]` are left for a new session.
-- `code-reviewer` is part of the core workflow, not an extra optional step.
+- `apply` uses `[BDD]` for tasks with tests written and `[x][BDD]` for tasks whose tests, implementation, and validation are complete.
+- `propose-sync` treats non-`[manual]` tasks as complete when they are marked `[x][BDD]`, `[x][widget-test]`, or `[x]`; it no longer depends on `[x][cr]`.
+- `code-reviewer` is the review-stage skill. It checks the git diff against the spec and writes reports under `docs/code-review-report/`; it does not update task checkboxes.
 
 ## Extension Skills
 
@@ -137,7 +141,7 @@ If you only want to understand the main flow, you can skip this section first. T
 | `export-ac`           | generate an `AC.md` acceptance-criteria document first | when you want to define completion criteria before implementation           |
 | `ac-to-test`          | turn `AC.md` into red test skeletons                   | when you want an AC-first or test-first workflow                            |
 | `export-feature-file` | turn specs or Gherkin into executable `.feature` files | when integrating with Reqnroll, Cucumber, Behave, or similar BDD frameworks |
-| `react-design`        | provide React architecture and best-practice guidance  | during frontend design discussions or React code review                     |
+| `react-design`        | provide React architecture and best-practice guidance  | during frontend design, React implementation, or React code review          |
 
 ### Extension Flow Examples
 
@@ -173,8 +177,8 @@ A typical path looks like this:
 4. Generate `docs/propose/<feature>/02-gherkin.md`
 5. Generate `docs/propose/<feature>/03-tasks.md`
 6. Run `apply docs/propose/<feature>`
-7. Let `code-reviewer` review the completed implementation
-8. Run `bdd-unit-test` or `propose-sync` if needed
+7. Let `apply` write tests as `[BDD]`, then implement and mark tasks as `[x][BDD]`
+8. Run `code-reviewer`, manual `bdd-unit-test`, or `propose-sync` if needed
 
 ## Who This Is For
 

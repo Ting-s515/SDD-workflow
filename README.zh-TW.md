@@ -5,7 +5,7 @@
 
 # SDD Workflow
 
-這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 用來說明如何將需求文檔逐步轉成結構化流程、驗收條件、任務清單、實作、審查與完成狀態同步。
+這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 用來說明如何將需求文檔逐步轉成結構化流程、驗收條件、任務清單、TDD 實作、審查與完成狀態同步。
 
 它適合這幾種情境：
 
@@ -18,7 +18,7 @@
 
 - 一條可重複使用的 SDD 核心流程
 - 一組對應流程節點的技能定義
-- 可選接入的 AC-first、Feature File 與 React 審查延伸能力
+- 可選接入的 AC-first、可執行 Feature File、React 設計與 code review 延伸能力
 
 ## Workflow 一覽
 
@@ -31,10 +31,11 @@ propose
   └─ 03-tasks.md
   ↓
 apply
-  ├─ 實作任務
-  └─ code-reviewer
+  ├─ bdd-unit-test -> [BDD]
+  ├─ 實作與測試驗證
+  └─ [x][BDD]
   ↓
-bdd-unit-test (optional, manual)
+code-reviewer (需要 review 時執行)
   ↓
 propose-sync
   ↓
@@ -73,15 +74,16 @@ docs/propose/<feature-name>/
 
 ### 3. 使用 `apply`
 
-依照任務清單逐步實作。
+依照任務清單執行 TDD 流程。`apply` 會先替所有一般任務補 BDD 測試並標記 `[BDD]`，再逐項實作、跑測試，通過後更新為 `[x][BDD]`。
 
 ```text
 apply docs/propose/<feature-name>
 ```
 
-### 4. 補測試或同步完成狀態
+### 4. Review 或同步完成狀態
 
-- 實作後補單元測試：`bdd-unit-test`
+- 需要對照規格與 diff 審查時：`code-reviewer`
+- 需要針對指定檔案額外補單元測試時：`bdd-unit-test`
 - 同步回原始規格文檔：`propose-sync`
 
 ## Repository Structure
@@ -91,9 +93,9 @@ skills/
   propose/              核心提案入口
   clarify-flow/         將需求整理成結構化流程
   export-gherkin/       將流程轉成 Gherkin 驗收條件
-  apply/                依任務清單逐步實作
-  code-reviewer/        對照規格執行 code review
-  bdd-unit-test/        實作後補單元測試
+  apply/                依任務清單執行 TDD 測試與實作
+  bdd-unit-test/        產出 BDD 單元測試
+  code-reviewer/        對照規格與 git diff 執行 code review
   propose-sync/         同步已完成功能回規格文檔
 
   export-ac/            延伸：先產出 AC 文件
@@ -107,7 +109,7 @@ docs/
 
 ## 核心流程
 
-核心流程以規格文檔為起點，先建立提案與任務，再進入實作與審查，最後同步完成狀態。
+核心流程以規格文檔為起點，先建立提案與任務，再進入 TDD 實作與驗證，必要時做 code review，最後同步完成狀態。
 
 | 階段            | 技能             | 產出 / 任務                |
 | --------------- | ---------------- | -------------------------- |
@@ -115,17 +117,19 @@ docs/
 | 1a. 結構化流程  | `clarify-flow`   | `01-flow.md`               |
 | 1b. 驗收條件    | `export-gherkin` | `02-gherkin.md`            |
 | 1c. 任務清單    | `propose` 本體   | `03-tasks.md`              |
-| 2. 實作任務     | `apply`          | 依序完成 `03-tasks.md`     |
-| 2a. Code Review | `code-reviewer`  | 統一審查並更新 `[x][cr]`   |
-| 3. 補上單元測試 | `bdd-unit-test`  | 產出實作後測試             |
+| 2. TDD 實作     | `apply`          | 先補測試，再依序完成 `03-tasks.md` |
+| 2a. 測試生成    | `bdd-unit-test`  | `apply` 內部呼叫，或手動替指定檔案補測試 |
+| 2b. Code Review | `code-reviewer`  | 對照規格與 git diff 審查，輸出 review report |
 | 4. 同步完成狀態 | `propose-sync`   | 回寫規格文檔的 `## 已完成` |
 
 ### 核心流程補充
 
 - `propose` 會回寫規格文檔中的 `> propose:` 標記，供後續 `propose-sync` 掃描使用。
-- `propose` 可處理一般功能需求，也可處理 `bug fix list` 中需進一步提案的項目。
+- `propose` 可處理一般功能需求，也可處理 `## bug fix list` 中的 `[quick-fix]`、`[propose]` 與未標記項目。
 - `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
-- `code-reviewer` 屬於核心流程的一部分，不是額外附加步驟。
+- `apply` 使用 `[BDD]` 表示測試已撰寫，使用 `[x][BDD]` 表示測試、實作與驗證完成。
+- `propose-sync` 以 `[x][BDD]`、`[x][widget-test]` 或 `[x]` 判斷非 `[manual]` 任務完成，不再依賴 `[x][cr]`。
+- `code-reviewer` 是 review 階段的技能，可依規格與 diff 審查並產生 `docs/code-review-report/` 報告；它不負責更新任務 checkbox。
 
 ## 延伸技能
 
@@ -136,7 +140,7 @@ docs/
 | `export-ac`           | 先從需求整理出 `AC.md` 驗收準則文件           | 需要先定義完成標準，再進入實作                    |
 | `ac-to-test`          | 將 `AC.md` 轉成紅燈測試骨架                   | 想採用 AC-first / test-first 流程時               |
 | `export-feature-file` | 將規格或 Gherkin 轉成可執行的 `.feature` 檔案 | 需要接入 Reqnroll、Cucumber、Behave 等 BDD 框架時 |
-| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論或 React code review 時               |
+| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論、React 實作或 React code review 時   |
 
 ### 延伸流程範例
 
@@ -172,8 +176,8 @@ export-feature-file -> .feature
 4. 產出 `docs/propose/<feature>/02-gherkin.md`
 5. 產出 `docs/propose/<feature>/03-tasks.md`
 6. 執行 `apply docs/propose/<feature>`
-7. 實作完成後由 `code-reviewer` 統一審查
-8. 視需要執行 `bdd-unit-test` 或 `propose-sync`
+7. `apply` 先補測試標記 `[BDD]`，再實作並更新為 `[x][BDD]`
+8. 視需要執行 `code-reviewer`、手動 `bdd-unit-test` 或 `propose-sync`
 
 ## 適用對象
 
