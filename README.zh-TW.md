@@ -5,7 +5,7 @@
 
 # SDD Workflow
 
-這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 用來說明如何將需求文檔逐步轉成結構化流程、驗收條件、任務清單、TDD 實作與完成狀態同步。
+這是一套以規格驅動開發（Specification-Driven Development, SDD）為核心設計的技能工作流。此 repo 主要說明 `propose`、`apply`、`propose-sync` 之間的依賴流程，以及它們直接呼叫的技能。
 
 它適合這幾種情境：
 
@@ -16,9 +16,9 @@
 
 ## 這個 Repo 提供什麼
 
-- 一條可重複使用的 SDD 核心流程
-- 一組對應流程節點的技能定義
-- 可選接入的 AC-first、可執行 Feature File、React 設計與 code review 延伸能力
+- 一條可重複使用的 `propose -> apply -> propose-sync` 核心流程
+- 主流程直接依賴的技能定義
+- AC-first、可執行 Feature File、React 設計與 code review 等延伸輔助技能
 
 ## Workflow 一覽
 
@@ -82,23 +82,25 @@ apply docs/propose/<feature-name>
 
 使用 `propose-sync` 同步回原始規格文檔。
 
-`code-reviewer` 是獨立審查技能；目前新版 `propose -> apply -> propose-sync` 主流程不依賴它。
+未被 `propose`、`apply` 或 `propose-sync` 直接呼叫的技能，都屬於延伸輔助技能，不算主流程。
 
 ## Repository Structure
 
 ```text
 skills/
+  # 主流程與直接依賴技能
   propose/              核心提案入口
   clarify-flow/         將需求整理成結構化流程
   export-gherkin/       將流程轉成 Gherkin 驗收條件
   apply/                依任務清單執行 TDD 測試與實作
   bdd-unit-test/        產出 BDD 單元測試
-  code-reviewer/        對照規格與 git diff 執行 code review
   propose-sync/         同步已完成功能回規格文檔
 
+  # 延伸輔助技能
   export-ac/            延伸：先產出 AC 文件
   ac-to-test/           延伸：由 AC 產出紅燈測試骨架
   export-feature-file/  延伸：輸出可執行 .feature
+  code-reviewer/        延伸：對照規格與 git diff 執行 code review
   react-design/         延伸：React 設計與 review 原則
 
 docs/
@@ -108,6 +110,8 @@ docs/
 ## 核心流程
 
 核心流程以規格文檔為起點，先建立提案與任務，再進入 TDD 實作與驗證，最後同步完成狀態。
+
+只有被 `propose`、`apply` 或 `propose-sync` 直接使用的技能會列入核心流程表。
 
 | 階段            | 技能             | 產出 / 任務                |
 | --------------- | ---------------- | -------------------------- |
@@ -126,11 +130,11 @@ docs/
 - `apply` 只會自動執行一般任務；標記為 `[manual]` 的任務會保留給新 session 手動觸發。
 - `apply` 使用 `[BDD]` 表示測試已撰寫，使用 `[x][BDD]` 表示測試、實作與驗證完成。
 - `propose-sync` 以 `[x][BDD]`、`[x][widget-test]` 或 `[x]` 判斷非 `[manual]` 任務完成，不再依賴 `[x][cr]`。
-- `code-reviewer` 獨立於核心流程，可依規格與 diff 審查並產生 `docs/code-review-report/` 報告；它不負責更新任務 checkbox，也不是 `propose-sync` 前置條件。
+- 沒有被 `propose`、`apply` 或 `propose-sync` 直接呼叫的技能，一律視為延伸輔助技能。
 
-## 延伸技能
+## 延伸輔助技能
 
-如果你只想理解主流程，可以先跳過這段。以下技能不是必經步驟，但能補強驗收與測試策略。
+如果你只想理解主流程，可以先跳過這段。以下技能不是 `propose -> apply -> propose-sync` 的依賴，而是圍繞主流程使用的輔助能力。
 
 | 技能                  | 角色                                          | 適用時機                                          |
 | --------------------- | --------------------------------------------- | ------------------------------------------------- |
@@ -150,8 +154,6 @@ docs/
 export-ac -> AC.md
   ↓
 ac-to-test -> 測試骨架
-  ↓
-propose / apply -> 實作與驗證
 ```
 
 #### BDD 執行檔路徑
@@ -177,7 +179,7 @@ export-feature-file -> .feature
 7. `apply` 先補測試標記 `[BDD]`，再實作並更新為 `[x][BDD]`
 8. 執行 `propose-sync` 回寫來源規格文檔
 
-若需要額外審查，再獨立執行 `code-reviewer`。
+若需要 code review、AC-first 測試或可執行 BDD 檔，再獨立使用延伸輔助技能。
 
 ## 適用對象
 

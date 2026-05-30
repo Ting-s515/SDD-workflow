@@ -5,7 +5,7 @@
 
 # SDD Workflow
 
-A skill-based workflow built around Specification-Driven Development (SDD). This repository explains how product requirements can be transformed into structured flows, acceptance criteria, task lists, TDD implementation, and synced completion status.
+A skill-based workflow built around Specification-Driven Development (SDD). This repository documents the dependency flow between `propose`, `apply`, and `propose-sync`, plus the skills they directly call.
 
 This repo is useful if you want to:
 
@@ -16,9 +16,9 @@ This repo is useful if you want to:
 
 ## What This Repo Provides
 
-- a reusable SDD core workflow
-- a set of skills mapped to each stage of the workflow
-- optional extensions for AC-first, executable Feature File generation, React design, and code review guidance
+- a reusable `propose -> apply -> propose-sync` core workflow
+- the direct dependency skills used by that core workflow
+- optional helper skills for AC-first, executable Feature File generation, React design, and code review guidance
 
 ## Workflow At A Glance
 
@@ -83,23 +83,25 @@ apply docs/propose/<feature-name>
 
 Sync finished work back to the source spec with `propose-sync`.
 
-`code-reviewer` is available as an independent review skill, but the current `propose -> apply -> propose-sync` flow does not depend on it.
+Skills that are not directly called by `propose`, `apply`, or `propose-sync` are extension helper skills, not part of the core flow.
 
 ## Repository Structure
 
 ```text
 skills/
+  # Core workflow and direct dependency skills
   propose/              entry point for proposal generation
   clarify-flow/         convert requirements into structured flow documents
   export-gherkin/       convert flows into Gherkin acceptance criteria
   apply/                run TDD tests and implementation from task lists
   bdd-unit-test/        generate BDD unit tests
-  code-reviewer/        review git diff against specs
   propose-sync/         sync completed features back to the spec
 
+  # Extension helper skills
   export-ac/            extension: generate AC documents first
   ac-to-test/           extension: generate red tests from AC
   export-feature-file/  extension: output executable .feature files
+  code-reviewer/        extension: review git diff against specs
   react-design/         extension: React design and review principles
 
 docs/
@@ -109,6 +111,8 @@ docs/
 ## Core Workflow
 
 The core workflow starts from a spec document, generates proposal artifacts, moves into TDD implementation and validation, and finally syncs completion status back to the source document.
+
+Only skills directly used by `propose`, `apply`, or `propose-sync` are listed in this core table.
 
 | Stage                   | Skill            | Output / Task                                   |
 | ----------------------- | ---------------- | ----------------------------------------------- |
@@ -127,11 +131,11 @@ The core workflow starts from a spec document, generates proposal artifacts, mov
 - `apply` only executes normal tasks automatically; tasks marked as `[manual]` are left for a new session.
 - `apply` uses `[BDD]` for tasks with tests written and `[x][BDD]` for tasks whose tests, implementation, and validation are complete.
 - `propose-sync` treats non-`[manual]` tasks as complete when they are marked `[x][BDD]`, `[x][widget-test]`, or `[x]`; it no longer depends on `[x][cr]`.
-- `code-reviewer` is independent from the core flow. It checks the git diff against the spec and writes reports under `docs/code-review-report/`; it does not update task checkboxes and is not required before `propose-sync`.
+- Any skill not directly called by `propose`, `apply`, or `propose-sync` is treated as an extension helper skill.
 
-## Extension Skills
+## Extension Helper Skills
 
-If you only want to understand the main flow, you can skip this section first. These skills are not mandatory, but they extend the workflow with stronger acceptance and testing strategies.
+If you only want to understand the main flow, you can skip this section first. These skills are not dependencies of `propose -> apply -> propose-sync`; they are optional helpers around the core workflow.
 
 | Skill                 | Role                                                   | When To Use It                                                              |
 | --------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------- |
@@ -151,8 +155,6 @@ Requirements spec
 export-ac -> AC.md
   ↓
 ac-to-test -> test skeletons
-  ↓
-propose / apply -> implementation and validation
 ```
 
 #### Executable BDD path
@@ -178,7 +180,7 @@ A typical path looks like this:
 7. Let `apply` write tests as `[BDD]`, then implement and mark tasks as `[x][BDD]`
 8. Run `propose-sync` to update the source spec
 
-For an extra review pass, run `code-reviewer` separately.
+For helper workflows such as code review, AC-first tests, or executable BDD files, use the extension skills separately.
 
 ## Who This Is For
 

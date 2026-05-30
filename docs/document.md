@@ -1,6 +1,6 @@
 # SDD Workflow 技能總覽
 
-本文件對齊 `skills/` 目錄中目前的技能定義，說明各技能的觸發時機、輸入輸出、相依關係與任務狀態標記。
+本文件對齊 `skills/` 目錄中目前的技能定義，說明 `propose -> apply -> propose-sync` 主流程、直接依賴技能、任務狀態標記，以及不屬於主流程依賴的延伸輔助技能。
 
 ## 核心流程
 
@@ -27,6 +27,8 @@ propose-sync
 ```
 
 ## 流程階段對應表
+
+只有 `propose`、`apply`、`propose-sync` 以及它們直接呼叫的技能列入主流程。沒有直接依賴關係的技能一律放在「延伸輔助技能」。
 
 | 階段 | 技能 | 主要產出 / 任務 | 觸發方式 |
 | --- | --- | --- | --- |
@@ -95,7 +97,9 @@ propose-sync
 - `[manual]` 任務不納入完成判斷。
 - 非 `[manual]` 任務全部完成後，將功能寫入規格文檔最上方 `## 已完成` 區塊；既有區塊會完整替換，避免重複累積。
 
-## 延伸技能
+## 延伸輔助技能
+
+以下技能不被 `propose`、`apply` 或 `propose-sync` 直接依賴，不算在主流程內；需要時可獨立使用。
 
 | 技能 | 目的 | 主要輸出 |
 | --- | --- | --- |
@@ -113,7 +117,7 @@ propose-sync
 - 完成 review 後，需將與對話輸出一致的摘要存到 `docs/code-review-report/code-review-YYYY-MM-DD-<feature-slug>.md`。
 - 同一天同一規格重複審查時覆蓋舊檔，但輪數依既有檔案標題遞增。
 
-## 延伸流程範例
+## 延伸輔助流程範例
 
 ### AC-first 路徑
 
@@ -123,8 +127,6 @@ propose-sync
 export-ac -> AC.md
   ↓
 ac-to-test -> 紅燈測試骨架
-  ↓
-propose / apply -> TDD 實作與驗證
 ```
 
 ### 可執行 BDD 路徑
