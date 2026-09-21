@@ -18,7 +18,7 @@ This repo is useful if you want to:
 
 - a reusable `propose -> apply -> propose-sync` core workflow
 - the direct dependency skills used by that core workflow
-- optional helper skills for AC-first, executable Feature File generation, React design, and code review guidance
+- optional helper skills for AC-first, executable Feature File generation, and React design guidance
 
 ## Workflow At A Glance
 
@@ -101,8 +101,7 @@ skills/
   export-ac/            extension: generate AC documents first
   ac-to-test/           extension: generate red tests from AC
   export-feature-file/  extension: output executable .feature files
-  code-reviewer/        extension: review git diff against specs
-  react-design/         extension: React design and review principles
+  react-design/         extension: React design principles
 
 docs/
   document.md           workflow overview document
@@ -142,8 +141,7 @@ If you only want to understand the main flow, you can skip this section first. T
 | `export-ac`           | generate an `AC.md` acceptance-criteria document first | when you want to define completion criteria before implementation           |
 | `ac-to-test`          | turn `AC.md` into red test skeletons                   | when you want an AC-first or test-first workflow                            |
 | `export-feature-file` | turn specs or Gherkin into executable `.feature` files | when integrating with Reqnroll, Cucumber, Behave, or similar BDD frameworks |
-| `code-reviewer`       | review git diff against a spec and save a report       | when an independent review pass is needed                                  |
-| `react-design`        | provide React architecture and best-practice guidance  | during frontend design, React implementation, or React code review          |
+| `react-design`        | provide React architecture and best-practice guidance  | during frontend design or React implementation                             |
 
 ### Extension Flow Examples
 
@@ -180,7 +178,7 @@ A typical path looks like this:
 7. Let `apply` write tests as `[BDD]`, then implement and mark tasks as `[x][BDD]`
 8. Run `propose-sync` to update the source spec
 
-For helper workflows such as code review, AC-first tests, or executable BDD files, use the extension skills separately.
+For helper workflows such as AC-first tests or executable BDD files, use the extension skills separately.
 
 ## Who This Is For
 

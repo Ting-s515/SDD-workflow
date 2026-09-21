@@ -18,7 +18,7 @@
 
 - 一條可重複使用的 `propose -> apply -> propose-sync` 核心流程
 - 主流程直接依賴的技能定義
-- AC-first、可執行 Feature File、React 設計與 code review 等延伸輔助技能
+- AC-first、可執行 Feature File 與 React 設計等延伸輔助技能
 
 ## Workflow 一覽
 
@@ -100,8 +100,7 @@ skills/
   export-ac/            延伸：先產出 AC 文件
   ac-to-test/           延伸：由 AC 產出紅燈測試骨架
   export-feature-file/  延伸：輸出可執行 .feature
-  code-reviewer/        延伸：對照規格與 git diff 執行 code review
-  react-design/         延伸：React 設計與 review 原則
+  react-design/         延伸：React 設計原則
 
 docs/
   document.md           技能總覽文件
@@ -141,8 +140,7 @@ docs/
 | `export-ac`           | 先從需求整理出 `AC.md` 驗收準則文件           | 需要先定義完成標準，再進入實作                    |
 | `ac-to-test`          | 將 `AC.md` 轉成紅燈測試骨架                   | 想採用 AC-first / test-first 流程時               |
 | `export-feature-file` | 將規格或 Gherkin 轉成可執行的 `.feature` 檔案 | 需要接入 Reqnroll、Cucumber、Behave 等 BDD 框架時 |
-| `code-reviewer`       | 對照規格與 git diff 執行審查並存 report       | 需要獨立 review 階段時                            |
-| `react-design`        | 提供 React 架構與最佳實踐檢查原則             | 前端設計討論、React 實作或 React code review 時   |
+| `react-design`        | 提供 React 架構與最佳實踐原則                 | 前端設計討論或 React 實作時                       |
 
 ### 延伸流程範例
 
@@ -179,7 +177,7 @@ export-feature-file -> .feature
 7. `apply` 先補測試標記 `[BDD]`，再實作並更新為 `[x][BDD]`
 8. 執行 `propose-sync` 回寫來源規格文檔
 
-若需要 code review、AC-first 測試或可執行 BDD 檔，再獨立使用延伸輔助技能。
+若需要 AC-first 測試或可執行 BDD 檔，再獨立使用延伸輔助技能。
 
 ## 適用對象
 

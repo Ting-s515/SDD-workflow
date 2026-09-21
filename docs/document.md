@@ -25,7 +25,6 @@ apply
 propose-sync
     └─ 將完成項目回寫到規格文檔的 ## 已完成 區塊
 ```
-
 ## 流程階段對應表
 
 只有 `propose`、`apply`、`propose-sync` 以及它們直接呼叫的技能列入主流程。沒有直接依賴關係的技能一律放在「延伸輔助技能」。
@@ -106,16 +105,7 @@ propose-sync
 | `export-ac` | 實作前先整理 Acceptance Criteria，明確 In / Out Scope 與測試策略 | `AC-<input-name>.md` |
 | `ac-to-test` | 將 `AC.md` 每條 Given / When / Then 轉成紅燈測試骨架 | 對應語言的測試檔 |
 | `export-feature-file` | 將規格或 Gherkin 轉成可被 BDD 框架執行的 `.feature` | `.feature` 與 Step Definitions 提示 |
-| `code-reviewer` | 對照規格文檔與 git diff 審查程式碼，固定輸出 review report | 獨立 review 階段，不是 `propose -> apply -> propose-sync` 的依賴 |
-| `react-design` | 提供 React 組件、hooks、services、context 與註解規範 | React 設計與 review 判斷基準 |
-
-### `code-reviewer`
-
-- 獨立於新版核心流程；`propose`、`apply`、`propose-sync` 不依賴它。
-- 用於對照規格文檔與 git diff 審查程式碼，不是 `apply` 技能內建的自動任務標記流程。
-- 若 diff 包含 React 前端檔案，先載入 `react-design` 原則審查，再做規格符合度與通用程式碼審查。
-- 完成 review 後，需將與對話輸出一致的摘要存到 `docs/code-review-report/code-review-YYYY-MM-DD-<feature-slug>.md`。
-- 同一天同一規格重複審查時覆蓋舊檔，但輪數依既有檔案標題遞增。
+| `react-design` | 提供 React 組件、hooks、services、context 與註解規範 | React 設計原則與實作指引 |
 
 ## 延伸輔助流程範例
 
@@ -137,15 +127,4 @@ ac-to-test -> 紅燈測試骨架
 export-feature-file -> .feature
   ↓
 依框架撰寫或補齊 Step Definitions
-```
-
-### React 審查路徑
-
-```text
-React diff
-  ↓
-code-reviewer
-  ├─ react-design 原則
-  ├─ 規格符合度
-  └─ 通用程式碼審查
 ```
